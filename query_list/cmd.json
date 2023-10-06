@@ -1,0 +1,50 @@
+{
+  "WebSearch_cmd_list": [
+    "search in google",
+    "find from google"
+  ],
+  "WikiSearch_cmd_list": [
+    "from wikipedia",
+    "in wikipedia"
+  ],
+  "TimeReminder_cmd_list": [
+    "tell me the time",
+    "time now",
+    "what time it is"
+  ],
+  "DayReminder_cmd_list": [
+    "which day it is",
+    "day today",
+    "todays date"
+  ],
+  "Intro_cmd_list": [
+    "tell me your name",
+    "Who are you?"
+  ],
+  "YtMusic_cmd_list": [
+    "play song",
+    "find song",
+    "play music"
+  ],
+  "NoteCreate_cmd_list": [
+    "take note",
+    "make a note",
+    "note it down"
+  ],
+  "ApplicationWindowOpen_cmd_list": [
+    "open all windows",
+    "show all open apps"
+  ],
+  "StopKeywords_cmd_list": [
+    "stop",
+    "mute",
+    "silent",
+    "hold",
+    "good bye"
+  ],
+  "WakeKeywords_cmd_list": [
+    "Are you Up there",
+    "up there",
+    "wake up"
+  ]
+}

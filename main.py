@@ -15,55 +15,35 @@ from features.default_features import default_apps
 from features.comm_features import com_feat
 from query_list.qry_list import qr
 
-# from feature.process_monitor import browser_tabs_info_alter2
-# from memory.q_list import *
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 list_data = qr.read_file()
 nl = '\n'
 
-# log_dir = '.\\log\\'
-log_dir = './log'
-# file_name = time.strftime("%Y-%m-%d") + '_Vaani.log'
-file_name = strftime("%Y-%m-%d") + '_Vaani.log'
-# full_file_path = log_dir + '/' + file_name
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+log_dir = './logs/'
+file_name = strftime("%Y-%m-%d") + '_Vaani.logs'
 filepath = log_dir + '/' + file_name
 # os.chdir(log_dir)
 print(f'full_file_path:\t{filepath}')
 
-# logging.basicConfig(filepath,
-#                     filemode='w',
-#                     format='%(name)s - %(levelname)s - %(message)s',
-#                     datefmt='%H:%M:%S',
-#                     level=logging.DEBUG,
-#                     force=True)
-
-logging.info('Logger Initiated >>> ')
-logger = logging.getLogger('Logger Initiated >>> ')
-
-
-# log_file = config_parsar.read_config()
-# print('Log File:\t', log_file)
 
 class VaaniVA:
-    def __init__(self, filepath):
-        self.filepath = filepath
+    def __init__(self):
         # self.filepath = filepath
+        # self.filepath = filepath
+        self.get_logger()
 
     def get_logger(self):
         logging.basicConfig(filename=filepath, filemode='w',
                             level=logging.DEBUG,
-                            format='%(name)s - %(levelname)s - %(message)s')
+                            format='%(name)s - %(levelname)s - %(message)s',
+                            force=True)
         logging.debug(">> Logging initiated :: ")
-        return logging.getLogger(__name__)
-
-    # logger = get_logger('./log/log.txt')
-    # logger.info('> Logger initiate!')
+        # return logging.getLogger(__name__)
 
     def Hello(self):
-        logger.info('>> Initiate greet message. ')
         # Engine.Speak(
         return Engine.Speak('Hello sir I am Vaani, your virtual assistant. Tell me how may I help you')
 
@@ -71,31 +51,7 @@ class VaaniVA:
         Engine.Speak('Service Not added yet')
         pass
 
-    # def query_action(self, qry: str, srch_str: list, action, action_filter: str):
-    #     for i in range(len(srch_str)):
-    #         srch_str = srch_str[i]
-    #         # test_mod_new = WebSearch(srch_str)
-    #         # print(f'Test report:\t{test_mod_new}')
-    #         print(f'Search str:\t{srch_str}')
-    #         try:
-    #             if srch_str in qry:
-    #                 if not hasattr(action, action_filter):
-    #                     if action == callable:
-    #                         print(f'Param is a function')
-    #                         action_filter = None
-    #                         action = partial(action, action_filter)
-    #                         Engine.Speak(f'Function:{action}')
-    #                         pass
-    #                     else:
-    #                         self.non_service_task()
-    #                 else:
-    #                     action = partial(action, action_filter)
-    #                 return action
-    #         except 'IndexError':
-    #             pass
-    #         else:
-    #             self.non_service_task()
-
+    # TODO: Mute & Silent feature with simulteniously manage different works.
     def cmd_relay(self, list_name, inp_str):
         print(f'Getting input String\t:{inp_str}{nl} Getting List Name\t:{list_name}')
         if list_name == 'WebSearch_cmd_list':
@@ -118,6 +74,14 @@ class VaaniVA:
             return self.get_action(com_feat.open_window(), None)
         elif list_name == 'StopKeywords_cmd_list':
             return self.get_action(default_apps.end_assistant(), None)
+        elif list_name == 'SystemOff_cmd_list':
+            return self.get_action(default_apps.system_down(), None)
+        elif list_name == 'SystemLock_cmd_list':
+            return self.get_action(default_apps.sys_lock(), None)
+        elif list_name == 'RecycleBin_Cln_cmd_list':
+            return self.get_action(default_apps.cln_trsh(), None)
+        elif list_name == 'ConsoleCln_list_cmd':
+            return self.get_action(default_apps.cmd_clr(), None)
         else:
             pass
 
@@ -134,26 +98,6 @@ class VaaniVA:
                 Engine.Speak(f'Function:{action}')
                 pass
             return action
-
-    def query_action1(self, qry: str, srch_str: str, action, action_filter: str):
-        try:
-            if srch_str in qry:
-                if not hasattr(action, action_filter):
-                    if action == callable:
-                        print(f'Param is a function')
-                        action_filter = None
-                        action = partial(action, action_filter)
-                        Engine.Speak(f'Function:{action}')
-                        pass
-                    else:
-                        self.non_service_task()
-                else:
-                    action = partial(action, action_filter)
-                return action
-            else:
-                self.non_service_task()
-        except 'IndexError':
-            pass
 
     def dict_ops(self, dict_str: dict):
         trans_val = ''
@@ -181,25 +125,30 @@ class VaaniVA:
         """
         :return: action none
         """
-        logger.info(">> Initiating query input.  ")
         wake_word = "are you up there"
-        self.Hello()
-        logger.info(">> Welcome message to begin interaction. ")
-        while True:
-            logger.info(">> Convert Speech to text into Lower case. ")
-            query = Engine.take_command()  # .lower()
+        query = Engine.take_command()  # .lower()
+        if query is not None:
             query = self.dict_ops(query)
             print(f'Type of Query:\t{type(query)}')
             print(f'Query Without Loop:\t{query}')
-            logger.info(">> Pre-set checks for matching pre defined commands. ")
-            k = qr.key_by_val(list_data, query)
-            print(f'List name in Main:\t{k}{nl}Finalize Query before trigger Command:\t{query}')
-            self.cmd_relay(k, query)
-            # return action_cmd
+            return query
+        elif query == []:
+            Engine.Speak(f'can you repeat that once again! its an empty list')
+            pass
+        else:
+            Engine.Speak(f'can you repeat that once again!')
+            pass
 
 
 if __name__ == '__main__':
-    # logger.info('> Initiated speech reorganization system. ')
-    VA = VaaniVA(filepath)
-    VA.TakeQuery()
+    VA = VaaniVA()
+    # VA.get_logger()
+    VA.Hello()
+    #TODO: Multi Process add & manage process.
+    while True:
+        query = VA.TakeQuery()
+        k = qr.key_by_val(list_data, query)
+        print(f'List name in Main:\t{k}{nl}Finalize Query before trigger Command:\t{query}')
+        VA.cmd_relay(k, query)
+
 

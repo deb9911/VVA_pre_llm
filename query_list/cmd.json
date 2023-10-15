@@ -33,7 +33,8 @@
   ],
   "ApplicationWindowOpen_cmd_list": [
     "open all windows",
-    "show all open apps"
+    "show all open apps",
+    "back to all"
   ],
   "StopKeywords_cmd_list": [
     "stop",
@@ -46,5 +47,26 @@
     "Are you Up there",
     "up there",
     "wake up"
+  ],
+  "SystemOff_cmd_list": [
+    "shut down the system",
+    "power down",
+    "shut down",
+    "turn off"
+  ],
+  "RecycleBin_Cln_cmd_list": [
+    "clean system trash",
+    "empty trash",
+    "empty bin",
+    "clear bin"
+  ],
+  "SystemLock_cmd_list": [
+    "lock system",
+    "lock down the system",
+    "lock down the system"
+  ],
+  "ConsoleCln_list_cmd": [
+    "clean console",
+    "clear console"
   ]
 }

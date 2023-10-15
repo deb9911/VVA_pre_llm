@@ -11,11 +11,6 @@ from system_check import chk_app_inst
 from engine.engine import Engine
 import logging
 
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(name)s %(levelname)s:%(message)s')
-logger = logging.getLogger(__name__)
-
 file_type = {"txt": "text", "xlsx": "spreadsheet", "csv": "spreadsheet",
              "docs": "document", "pdf": 'pdf', "ini": "information",
              "py": "script", "js": "script", "cpp": "script"}
@@ -26,15 +21,13 @@ file_type = {"txt": "text", "xlsx": "spreadsheet", "csv": "spreadsheet",
 class DefaultApps:
     qry = ''
 
-    def __init__(self):
-        pass
-
     def file_recognizer(self):
+        logging.debug(f'Initiate File recognizer. ')
         file_recogniser = file_type.keys()
         # if file_recogniser == 'txt':
 
     def tell_time(self):
-        logger.info("Initiate Time telling function. ")
+        logging.debug(f'Initiate Time operation. ')
         # This method will give the time
         time = str(datetime.datetime.now())
 
@@ -47,7 +40,7 @@ class DefaultApps:
         return hour, mins
 
     def tell_day(self):
-        logger.info(" Day output initiated. ")
+        logging.debug(f'Initiate Day Operation. ')
         # This function is for telling the
         # day of the week
         day = datetime.datetime.today().weekday() + 1
@@ -64,7 +57,7 @@ class DefaultApps:
             return day_of_the_week
 
     def check_file(filename, path):
-        logger.info("File Checking function initiated. ")
+        logging.debug(f'Initiate Check file process. ')
         filepath = str()
         dirs = {'home': os.path.expanduser,
                 'downloads': os.path.expanduser('/Downloads'),
@@ -79,7 +72,7 @@ class DefaultApps:
             return filepath
 
     def read_content(filepath):
-        logger.info("Read content of the simple files. Like PDF etc. ")
+        logging.debug(f'Initiate Reading content operation. ')
         pdf_text = ''
         with pdfplumber.open(filepath) as pdf:
             pages = pdf.pages
@@ -89,6 +82,7 @@ class DefaultApps:
 
     @staticmethod
     def google_search(qry: str):
+        logging.debug(f'Initiate Google Search operation. ')
         """
         :param qry: str
         :return: str
@@ -106,25 +100,32 @@ class DefaultApps:
             print(f'Empty String:\t{qry}')
 
     def cmd_clr(self):
+        logging.debug(f'Initiate Clear console screen. ')
         clear = lambda: os.system('cls')
         return clear
 
     def sys_lock(self):
+        logging.debug(f'Initiate System locking operation. ')
         ctypes.windll.user32.LockWorkStation()
 
     def system_down(self):
+        logging.debug(f'Initiate Shut Down process. ')
         subprocess.call('shutdown / p /f')
 
     def cln_trsh(self):
+        logging.debug(f'Initiate Clearn trash operation. ')
         return winshell.recycle_bin().empty(confirm=False, show_progress=False, sound=True)
 
     def hibrnet(self):
+        logging.debug(f'Initiate hibernet operation. ')
         return subprocess.call("shutdown / h")
 
     def sign_off(self):
+        logging.debug(f'Initiate Signing off process. ')
         return subprocess.call(["shutdown", "/l"])
 
     def end_assistant(self):
+        logging.debug(f'Initiate End of main process initiated. ')
         Engine.Speak("Bye")
         exit()
 

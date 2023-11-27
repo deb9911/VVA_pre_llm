@@ -41,7 +41,9 @@
     "mute",
     "silent",
     "hold",
-    "good bye"
+    "good bye",
+    "goodbye",
+    "bye"
   ],
   "WakeKeywords_cmd_list": [
     "Are you Up there",

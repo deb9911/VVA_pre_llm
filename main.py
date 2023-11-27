@@ -1,18 +1,12 @@
 import logging
-import os, sys
-
-import webbrowser
-import wikipedia
-import pywhatkit
-import pyautogui as pa
-import threading
-from time import sleep, strftime
-import inspect
+import os
+import sys
 from functools import partial
+from time import strftime
 
 from engine.engine import Engine
-from features.default_features import default_apps
 from features.comm_features import com_feat
+from features.default_features import default_apps
 from query_list.qry_list import qr
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -144,11 +138,14 @@ if __name__ == '__main__':
     VA = VaaniVA()
     # VA.get_logger()
     VA.Hello()
-    #TODO: Multi Process add & manage process.
+    # TODO: Multi Process add & manage process.
     while True:
-        query = VA.TakeQuery()
-        k = qr.key_by_val(list_data, query)
-        print(f'List name in Main:\t{k}{nl}Finalize Query before trigger Command:\t{query}')
-        VA.cmd_relay(k, query)
+        try:
+            query = VA.TakeQuery()
+            k = qr.key_by_val(list_data, query)
+            print(f'List name in Main:\t{k}{nl}Finalize Query before trigger Command:\t{query}')
+            VA.cmd_relay(k, query)
+        except Exception as e:
+            logging.error(f'Caught exception:\t + {str(e)}')
 
 

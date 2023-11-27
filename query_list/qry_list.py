@@ -1,8 +1,8 @@
 import os
 import json
 
-# src_file = r'query_list/cmd.json'
 src_file = r'query_list/cmd.json'
+# src_file = r'query_list/cmd.json'
 nl = '\n'
 
 
@@ -63,8 +63,11 @@ class CmdParser:
                 print(f'Data not sorted')
 
 
-
 qr = CmdParser()
+
+# if __name__ == '__main__':
+    # src_file = r'cmd.json'
+    # qr = CmdParser()
 # data = qr.read_file()
 # key = qr.key_list(data)
 # # val = qr.get_val(data, 'WebSearch_cmd_list')

@@ -1,6 +1,5 @@
 import pyttsx3
 import speech_recognition as sr
-import transformers
 import logging
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
@@ -12,7 +11,6 @@ class Engine:
     engine_model = pyttsx3.init()
     audio_str = ''
     query = dict
-
 
     @staticmethod
     def take_command():

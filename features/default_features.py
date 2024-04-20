@@ -7,7 +7,6 @@ import datetime
 
 import winshell as winshell
 
-from system_check import chk_app_inst
 from engine.engine import Engine
 import logging
 

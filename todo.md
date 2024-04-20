@@ -1,7 +1,7 @@
 <h1>TO DO list</h1>
 The enlisted issues will be added into change log as per the progress will approach. 
 
-<h3>For upcoming **version 3.0**</h3>
+**<h3>V 3.0</h3>**
 
 **Command receive pattern need to change**
 1. Continuous interaction also follow user instruction.

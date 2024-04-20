@@ -130,3 +130,4 @@ class DefaultApps:
 
 
 default_apps = DefaultApps()
+

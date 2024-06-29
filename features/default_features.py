@@ -8,6 +8,7 @@ import datetime
 import winshell as winshell
 
 from engine.engine import Engine
+from .sound import Sound
 import logging
 
 file_type = {"txt": "text", "xlsx": "spreadsheet", "csv": "spreadsheet",
@@ -127,6 +128,12 @@ class DefaultApps:
         logging.debug(f'Initiate End of main process initiated. ')
         Engine.Speak("Bye")
         exit()
+
+    def mute_system_sound(self):
+        return Sound.mute()
+
+    def unmute_system_sound(self):
+        return Sound.volume_set(50)
 
 
 default_apps = DefaultApps()

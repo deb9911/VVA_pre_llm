@@ -6,11 +6,17 @@ import pywhatkit
 import pyautogui as pa
 import datetime
 from googlesearch import search
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
 import logging
 
 from engine.engine import Engine
 from features import default_apps
 from time import strftime, sleep
+
+
+# dr = webdriver.Chrome()
 
 
 class CommonFeatures:
@@ -35,20 +41,32 @@ class CommonFeatures:
     def google_search(self, query):
         logging.debug(f'Initiate Search content from google operation. ')
         Engine.Speak('Checking in Google')
-        print(f'Unfiltered Query:\t{query}')
+        # print(f'Unfiltered Query:\t{query}')
         query = self.qry_filter(query, ['search in google', 'find from google'])
-        print(f'Filtered query:\t{query}')
-        # result = google_search(query)
+        # print(f'Filtered query:\t{query}')
+        # content = google_search(query)
         try:
             # for i in search(query, tld="co.in", num=10, stop=10, pause=2):
             for i in search(query):
                 print("search value:\t", search(i))
-                # result = default_apps.google_search(query)
+                # read_out_content = self.google_search_helper(i)
                 Engine.Speak('Find some results in Google, Here it is. ')
+                # Engine.Speak(read_out_content)
+
                 return webbrowser.open(i)
         except:
             Engine.Speak('Not Able to find out the query. ')
             pass
+
+    def google_search_helper(self, url):
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'lxml')
+        # soup = BeautifulSoup(response.page_source, "lxml")
+        result = soup.get_text()
+
+        interesting_lines = [line for line in result.split("\n") if len(line) > 30]
+        print(f'result\t{interesting_lines}')
+        return interesting_lines
 
     def get_today(self):
         logging.debug(f'Initiate Day operation details from common features. ')

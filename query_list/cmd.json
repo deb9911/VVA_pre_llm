@@ -38,7 +38,6 @@
   ],
   "StopKeywords_cmd_list": [
     "stop",
-    "mute",
     "silent",
     "hold",
     "good bye",
@@ -64,11 +63,21 @@
   ],
   "SystemLock_cmd_list": [
     "lock system",
-    "lock down the system",
     "lock down the system"
   ],
   "ConsoleCln_list_cmd": [
-    "clean console",
-    "clear console"
+    "clean console"
+  ],
+  "LLM_Response": [
+    "explain",
+    "explain me",
+    "me about",
+    "can you tell"
+  ],
+  "Mute_sound": [
+    "mute"
+  ],
+  "Unmute_sound": [
+    "unmute"
   ]
 }

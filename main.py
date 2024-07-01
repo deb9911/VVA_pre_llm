@@ -38,11 +38,13 @@ class VaaniVA:
 
     def get_logger(self):
         logging.basicConfig(filename=filepath, filemode='w',
-                            level=logging.DEBUG,
+                            level=logging.INFO,
                             format='%(name)s - %(levelname)s - %(message)s',
                             force=True)
         logging.debug(">> Logging initiated :: ")
-        # return logging.getLogger(__name__)
+        # var = logging.INFO
+        return logging.getLogger(__name__)
+        # return var
 
     def Hello(self):
         # Engine.Speak(

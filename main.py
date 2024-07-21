@@ -5,8 +5,6 @@ import time
 from functools import partial
 from time import strftime
 import concurrent.futures
-from setuptools import setup
-from torch.utils.cpp_extension import BuildExtension, CppExtension
 
 
 from engine.engine import Engine
@@ -146,8 +144,6 @@ class VaaniVA:
         if query is not None:
             query = self.dict_ops(query)
             # query = CQ.query_fixer(query)
-            # print(f'Type of Query:\t{type(query)}')
-            # print(f'Query Without Loop:\t{query}')
             return query
         elif query == []:
             Engine.Speak(f'can you repeat that once again!')
@@ -171,37 +167,5 @@ if __name__ == '__main__':
 
         get_key_element = qr.key_by_val(list_data, returned_query)
         returned_action = VA.cmd_relay(get_key_element, returned_query)
-        # master_listener = VA.TakeQuery()
-        # if master_listener == 'hey vani' or master_listener == 'wake up vani':
-        #     with concurrent.futures.ThreadPoolExecutor() as executor_for_query:
-        #         get_query = executor_for_query.submit(VA.TakeQuery, )
-        #         returned_query = get_query.result()
-        #
-        #         get_key_element = qr.key_by_val(list_data, returned_query)
-        #         returned_action = VA.cmd_relay(get_key_element, returned_query)
-        # elif master_listener == 'pause' or master_listener == 'hold':
-        #     os.system('pause')
-        # else:
-
-
-
-
-        # with concurrent.futures.ThreadPoolExecutor() as executor_for_key_element:
-        #     get_key_element = executor_for_key_element.submit(qr.key_by_val, list_data, returned_query)
-        #     returned_key_element = get_key_element.result()
-
-        # with concurrent.futures.ThreadPoolExecutor() as executor_for_cmd_relay:
-        #     initiate_cmd_operation = executor_for_cmd_relay.submit(VA.cmd_relay,
-        #                                                            get_key_element, returned_query)
-        #     returned_action = initiate_cmd_operation.result()
-
-        # try:
-        #     query = VA.TakeQuery()
-        #     k = qr.key_by_val(list_data, query)
-        #     print(f'List name in Main:\t{k}{nl}Finalize Query before trigger Command:\t{query}')
-        #     VA.cmd_relay(k, query)
-        # except Exception as e:
-        #     logging.error(f'Caught exception:\t + {str(e)}')
-        #     pass
 
 

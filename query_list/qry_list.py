@@ -48,7 +48,7 @@ class CmdParser:
             if v is not None:
                 for vm in range(len(v)):
                     act_val = v[vm]
-                    print(f'Actual_VAL:\t{act_val}{nl}Val_str:\t{val_str}')
+                    # print(f'Actual_VAL:\t{act_val}{nl}Val_str:\t{val_str}')
                     if val_str is not None:
                         if act_val in val_str:
                             match = True

@@ -12,7 +12,7 @@ class CmdParser:
         with open(src_file, 'r') as cmd:
         # with open(r'../query_list/cmd.json', 'r') as cmd:
             data = json.load(cmd)
-            print(f'Data: \t{data}')
+            # print(f'Data: \t{data}')
             return data
 
     def key_list(self, data):

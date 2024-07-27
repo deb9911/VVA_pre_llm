@@ -2,6 +2,8 @@ import threading
 import speech_recognition as sr
 import pyttsx3
 
+from context_manager.context_manager import ContextManager
+
 
 class Engine:
     recognizer = sr.Recognizer()

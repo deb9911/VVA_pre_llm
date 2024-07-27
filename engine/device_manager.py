@@ -1,7 +1,6 @@
 import pyaudio
 import speech_recognition as sr
 import logging
-from engine.engine import Engine
 
 
 class DeviceManager:
@@ -58,5 +57,4 @@ class DeviceManager:
 
         self.set_input_device(devices[0]['index'])
         return True
-
 

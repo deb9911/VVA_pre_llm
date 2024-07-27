@@ -5,12 +5,12 @@ import time
 from functools import partial
 import concurrent.futures
 import webrtcvad
-import wave
 from pydub import AudioSegment
 from pydub.utils import make_chunks
 import threading
 
-from engine.engine import Engine
+
+from engine.engine_updated import Engine
 from features.comm_features import com_feat
 from features.default_features import default_apps
 from query_list.qry_list import qr
@@ -39,6 +39,7 @@ def fetch_config():
 class VaaniVA:
     def __init__(self):
         self.config = fetch_config()  # Fetch configuration from Flask app
+        print(f'get Config from app server\t::{self.config}')
         self.get_logger()
         self.vad = webrtcvad.Vad()
         self.vad.set_mode(1)  # 0-3. 3 is the most aggressive about filtering out non-speech
@@ -72,14 +73,41 @@ class VaaniVA:
 
     def cmd_relay(self, list_name, inp_str):
         print(f'Getting input String\t:{inp_str}{nl} Getting List Name\t:{list_name}')
-        if not self.config:
-            Engine.Speak('Configuration not available')
-            return
-
-        for cmd in self.config['commands']:
-            if cmd['keyword'] in inp_str:
-                return self.get_action(cmd['action'], None)
-        return Engine.Speak('Please repeat your query again')
+        if list_name == 'WebSearch_cmd_list':
+            return self.get_action(com_feat.google_search(inp_str), None)
+        elif list_name == 'WakeKeywords_cmd_list':
+            return self.get_action(com_feat.wake_up_cmd(), None)
+        elif list_name == 'WikiSearch_cmd_list':
+            return self.get_action(com_feat.wikipedia_search(inp_str), None)
+        elif list_name == 'TimeReminder_cmd_list':
+            return self.get_action(com_feat.tell_time(), None)
+        elif list_name == 'DayReminder_cmd_list':
+            return self.get_action(com_feat.get_today(), None)
+        elif list_name == 'Intro_cmd_list':
+            return self.get_action(com_feat.name_intro(), None)
+        elif list_name == 'YtMusic_cmd_list':
+            return self.get_action(com_feat.play_music(inp_str), None)
+        elif list_name == 'NoteCreate_cmd_list':
+            return self.get_action(com_feat.make_note(), None)
+        elif list_name == 'ApplicationWindowOpen_cmd_list':
+            # Updated to handle window switching
+            return self.get_action(lambda: com_feat.open_window(inp_str), None)
+        elif list_name == 'StopKeywords_cmd_list':
+            return self.get_action(default_apps.end_assistant(), None)
+        elif list_name == 'SystemOff_cmd_list':
+            return self.get_action(default_apps.system_down(), None)
+        elif list_name == 'SystemLock_cmd_list':
+            return self.get_action(default_apps.sys_lock(), None)
+        elif list_name == 'RecycleBin_Cln_cmd_list':
+            return self.get_action(default_apps.cln_trsh(), None)
+        elif list_name == 'ConsoleCln_list_cmd':
+            return self.get_action(default_apps.cmd_clr(), None)
+        elif list_name == 'Mute_sound':
+            return self.get_action(default_apps.mute_system_sound(), None)
+        elif list_name == 'Unmute_sound':
+            return self.get_action(default_apps.unmute_system_sound(), None)
+        else:
+            return Engine.Speak('Please repeat your query again')
 
     def get_action(self, action, action_filter):
         if action_filter is not None:
@@ -87,7 +115,7 @@ class VaaniVA:
             action = partial(action, action_filter)
             return action
         else:
-            if callable(action):
+            if action == callable:
                 print(f'Param is a function')
                 action = partial(action, None)
                 Engine.Speak(f'Function:{action}')
@@ -119,12 +147,12 @@ class VaaniVA:
         if query is not None:
             query = self.dict_ops(query)
             return query
-        elif query == []:
+        elif not query:
             Engine.Speak(f'can you repeat that once again!')
-            pass
+            return []
         else:
             Engine.Speak(f'can you repeat that once again!')
-            pass
+            return []
 
     def listen_and_act(self):
         while True:
@@ -176,6 +204,7 @@ if __name__ == '__main__':
         try:
             audio = dm.listen()
             returned_query = dm.recognize_speech(audio)
+            print(f'User query\t{returned_query}')
 
             get_key_element = qr.key_by_val(list_data, returned_query)
             returned_action = VA.cmd_relay(get_key_element, returned_query)

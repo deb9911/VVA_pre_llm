@@ -10,8 +10,9 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import logging
+import pygetwindow as gw
 
-from engine.engine import Engine
+from engine.engine_updated import Engine
 from features import default_apps
 from time import strftime, sleep
 
@@ -135,10 +136,42 @@ class CommonFeatures:
         print(f'Note testing:\t{note_list}')
         Engine.Speak('Note creation completed>>>')
 
-    def open_window(self):
-        logging.debug(f'Initiate Open all open application switcher window. ')
-        Engine.Speak('All the window app are here')
-        return pa.hotkey('win', 'Tab')
+    def switch_window_by_title(self, title):
+        try:
+            windows = gw.getWindowsWithTitle(title)
+            if windows:
+                window = windows[0]
+                window.activate()
+                return f"Switched to window with title: {title}"
+            else:
+                return f"No window found with title: {title}"
+        except Exception as e:
+            return f"Error switching to window with title {title}: {str(e)}"
+
+    def switch_window_by_id(self, window_id):
+        try:
+            window = gw.getWindowsAt(window_id)
+            if window:
+                window.activate()
+                return f"Switched to window with ID: {window_id}"
+            else:
+                return f"No window found with ID: {window_id}"
+        except Exception as e:
+            return f"Error switching to window with ID {window_id}: {str(e)}"
+
+    def list_open_windows(self):
+        windows = gw.getAllTitles()
+        return windows
+
+    def open_window(self, window_title=None):
+        logging.debug(f'Initiate Open all open application switcher window.')
+
+        if window_title:
+            result = self.switch_window_by_title(window_title)
+            Engine.Speak(result)
+        else:
+            Engine.Speak('All the window app are here')
+            pa.hotkey('win', 'Tab')
 
     def open_app(self):  # Fixme: Application list name sort out & match with voice command.
         logging.debug(f'Initiate Specific app features. ')

@@ -8,8 +8,6 @@ import webrtcvad
 from pydub import AudioSegment
 from pydub.utils import make_chunks
 import threading
-
-
 from engine.engine_updated import Engine
 from features.comm_features import com_feat
 from features.default_features import default_apps
@@ -43,6 +41,7 @@ class VaaniVA:
         self.get_logger()
         self.vad = webrtcvad.Vad()
         self.vad.set_mode(1)  # 0-3. 3 is the most aggressive about filtering out non-speech
+        self.engine = Engine()
 
     def get_logger(self):
         logging.basicConfig(filename=filepath, filemode='w',
@@ -52,10 +51,11 @@ class VaaniVA:
         logging.debug(">> Logging initiated :: ")
 
     def Hello(self):
-        return Engine.Speak('Hello sir I am Vaani, your virtual assistant. Tell me how may I help you')
+        intro_string = 'Hello sir I am Vaani, your virtual assistant. Tell me how may I help you'
+        return self.engine.Speak(intro_string)
 
     def non_service_task(self):
-        Engine.Speak('Service Not added yet')
+        self.engine.Speak('Service Not added yet')
         pass
 
     def is_speech(self, audio_chunk):
@@ -107,7 +107,7 @@ class VaaniVA:
         elif list_name == 'Unmute_sound':
             return self.get_action(default_apps.unmute_system_sound(), None)
         else:
-            return Engine.Speak('Please repeat your query again')
+            return self.engine.Speak('Please repeat your query again')
 
     def get_action(self, action, action_filter):
         if action_filter is not None:
@@ -118,7 +118,7 @@ class VaaniVA:
             if action == callable:
                 print(f'Param is a function')
                 action = partial(action, None)
-                Engine.Speak(f'Function:{action}')
+                self.engine.Speak(f'Function:{action}')
                 pass
             return action
 
@@ -143,15 +143,15 @@ class VaaniVA:
             print(f"Error processing dictionary: {e}")
 
     def TakeQuery(self):
-        query = Engine.take_command()  # .lower()
+        query = self.engine.take_command()  # .lower()
         if query is not None:
             query = self.dict_ops(query)
             return query
         elif not query:
-            Engine.Speak(f'can you repeat that once again!')
+            self.engine.Speak(f'can you repeat that once again!')
             return []
         else:
-            Engine.Speak(f'can you repeat that once again!')
+            self.engine.Speak(f'can you repeat that once again!')
             return []
 
     def listen_and_act(self):

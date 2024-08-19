@@ -1,6 +1,7 @@
 import os
 import json
 
+
 src_file = r'query_list/cmd.json'
 # src_file = r'query_list/cmd.json'
 nl = '\n'

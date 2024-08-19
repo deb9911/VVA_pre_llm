@@ -37,25 +37,31 @@ config = {
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 @app.route('/')
 def dashboard():
     return render_template('dashboard.html')
+
 
 @app.route('/settings')
 def settings():
     return render_template('settings.html')
 
+
 @app.route('/device_management')
 def device_management():
     return render_template('device_management.html')
+
 
 @app.route('/add_command_view')
 def add_command_view():
     return render_template('add_command.html')
 
+
 @app.route('/api/config', methods=['GET'])
 def get_config():
     return jsonify(config)
+
 
 @app.route('/api/config', methods=['POST'])
 def update_config():
@@ -63,16 +69,19 @@ def update_config():
     config = request.json
     return jsonify({"message": "Configuration updated"})
 
+
 @app.route('/api/commands', methods=['POST'])
 def add_command():
     command = request.json
     config['commands'].append(command)
     return jsonify({"message": "Command added"})
 
+
 @app.route('/api/commands/<int:index>', methods=['DELETE'])
 def delete_command(index):
     config['commands'].pop(index)
     return jsonify({"message": "Command deleted"})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

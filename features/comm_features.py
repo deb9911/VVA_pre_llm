@@ -11,8 +11,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import logging
 import pygetwindow as gw
+import time
+import win32gui
 
-from engine.engine_updated import Engine
+from engine.engine_updated import engine as Engine
 from features import default_apps
 from time import strftime, sleep
 
@@ -82,7 +84,8 @@ class CommonFeatures:
 
         if day in day_dict.keys():
             day_of_the_week = day_dict[day]
-            return Engine.Speak(f"Today is {day_of_the_week}")
+            date_str = f"Today is {day_of_the_week}"
+            return Engine.Speak(date_str)
 
     def tell_time(self):
         logging.debug(f'Initiate Time operation details from common features. ')
@@ -163,15 +166,44 @@ class CommonFeatures:
         windows = gw.getAllTitles()
         return windows
 
-    def open_window(self, window_title=None):
-        logging.debug(f'Initiate Open all open application switcher window.')
+    # def open_window(self, window_title=None):
+    #     logging.debug(f'Initiate Open all open application switcher window.')
+    #
+    #     if window_title:
+    #         result = self.switch_window_by_title(window_title)
+    #         Engine.Speak(result)
+    #     else:
+    #         Engine.Speak('All the window app are here')
+    #         pa.hotkey('win', 'Tab')
 
-        if window_title:
-            result = self.switch_window_by_title(window_title)
-            Engine.Speak(result)
-        else:
-            Engine.Speak('All the window app are here')
-            pa.hotkey('win', 'Tab')
+    def open_window(self, window_title):
+        # Press 'win' + 'Tab' to open the window switcher
+        pa.hotkey('win', 'Tab')
+        time.sleep(1)  # Wait for the window switcher to open
+
+        # List all window titles
+        def enum_window_titles(hwnd, results):
+            if win32gui.IsWindowVisible(hwnd):
+                results.append(win32gui.GetWindowText(hwnd))
+
+        windows = []
+        win32gui.EnumWindows(enum_window_titles, windows)
+
+        # Search for the specified window title
+        for i, title in enumerate(windows):
+            if window_title.lower() in title.lower():
+                # Simulate pressing the down arrow to navigate to the desired window
+                for _ in range(i):
+                    pa.press('down')
+                    time.sleep(0.1)
+
+                # Press 'Enter' to focus on the selected window
+                pa.press('enter')
+                return
+
+        # If no matching window found, speak an error message
+        pa.hotkey('esc')  # Exit the window switcher
+        Engine.Speak(f"Could not find a window with the title {window_title}.")
 
     def open_app(self):  # Fixme: Application list name sort out & match with voice command.
         logging.debug(f'Initiate Specific app features. ')

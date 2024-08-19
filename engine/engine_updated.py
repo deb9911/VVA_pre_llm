@@ -13,6 +13,7 @@ from pywhatkit.core.exceptions import InternetException
 
 nltk.data.path.append('./nltk_data')
 
+
 class Engine:
     recognizer = sr.Recognizer()
     context_manager = ContextManager()
@@ -98,11 +99,13 @@ class Engine:
         self.tts_queue.put(None)
         self.tts_thread.join()
 
+
+engine = Engine()
 # Example usage
-if __name__ == "__main__":
-    engine = Engine()
-    command = engine.take_command()
-    if command:
-        engine.Speak("You said: " + ' '.join([word for word, tag in command]))
-    engine.run_feature()  # Call to run feature that may need internet
-    engine.shutdown()
+# if __name__ == "__main__":
+#     engine = Engine()
+#     command = engine.take_command()
+#     if command:
+#         engine.Speak("You said: " + ' '.join([word for word, tag in command]))
+#     engine.run_feature()  # Call to run feature that may need internet
+#     engine.shutdown()

@@ -41,6 +41,7 @@ class VaaniVA:
         self.get_logger()
         self.vad = webrtcvad.Vad()
         self.vad.set_mode(1)  # 0-3. 3 is the most aggressive about filtering out non-speech
+        # self.engine = Engine()
         self.engine = Engine()
 
     def get_logger(self):
@@ -91,7 +92,8 @@ class VaaniVA:
             return self.get_action(com_feat.make_note(), None)
         elif list_name == 'ApplicationWindowOpen_cmd_list':
             # Updated to handle window switching
-            return self.get_action(lambda: com_feat.open_window(inp_str), None)
+            # return self.get_action(lambda: com_feat.open_window(inp_str), None)
+            return self.get_action(com_feat.open_window(), None)
         elif list_name == 'StopKeywords_cmd_list':
             return self.get_action(default_apps.end_assistant(), None)
         elif list_name == 'SystemOff_cmd_list':

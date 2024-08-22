@@ -63,7 +63,7 @@
   ],
   "SystemLock_cmd_list": [
     "lock system",
-    "lock down the system"
+    "lock the system"
   ],
   "ConsoleCln_list_cmd": [
     "clean console"

@@ -3,18 +3,16 @@ import os
 import sys
 import time
 from functools import partial
+from time import strftime
 import concurrent.futures
-import webrtcvad
-from pydub import AudioSegment
-from pydub.utils import make_chunks
-import threading
-from engine.engine_updated import Engine
+
+from engine.engine import Engine
 from features.comm_features import com_feat
 from features.default_features import default_apps
 from query_list.qry_list import qr
-from engine.device_manager import DeviceManager
 from engine.query_compiler import CQ
-import requests
+# from models.llm_config import llama2, llama2_response_store
+
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -22,164 +20,124 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 list_data = qr.read_file()
 nl = '\n'
 
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 log_dir = './logs/'
-file_name = time.strftime("%Y-%m-%d") + '_Vaani.logs'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+file_name = strftime("%Y-%m-%d") + '_Vaani.logs'
 filepath = os.path.join(log_dir, file_name)
-print(f'full_file_path:\t{filepath}')
 
+# Configuring the logger
+logging.basicConfig(filename=filepath, filemode='w',
+                    level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-def fetch_config():
-    response = requests.get('http://127.0.0.1:5000/api/config')
-    return response.json()
+logger = logging.getLogger(__name__)
+print(f'Logging started. Log file at: {filepath}')
+logger.info(f'Logging started. Log file at: {filepath}')
 
 
 class VaaniVA:
     def __init__(self):
-        self.config = fetch_config()  # Fetch configuration from Flask app
-        print(f'get Config from app server\t::{self.config}')
-        self.get_logger()
-        self.vad = webrtcvad.Vad()
-        self.vad.set_mode(1)  # 0-3. 3 is the most aggressive about filtering out non-speech
-        # self.engine = Engine()
         self.engine = Engine()
 
-    def get_logger(self):
-        logging.basicConfig(filename=filepath, filemode='w',
-                            level=logging.DEBUG,
-                            format='%(name)s - %(levelname)s - %(message)s',
-                            force=True)
-        logging.debug(">> Logging initiated :: ")
-
     def Hello(self):
-        intro_string = 'Hello sir I am Vaani, your virtual assistant. Tell me how may I help you'
-        return self.engine.Speak(intro_string)
+        logger.info('Greeting user.')
+        return self.engine.Speak('Hello sir I am Vaani, your virtual assistant. Tell me how may I help you')
 
     def non_service_task(self):
+        logger.warning('Non-service task invoked.')
         self.engine.Speak('Service Not added yet')
         pass
 
-    def is_speech(self, audio_chunk):
-        """ Check if the audio chunk contains speech. """
-        return self.vad.is_speech(audio_chunk, 16000)
-
-    def filter_non_speech(self, audio):
-        """ Filter out non-speech parts from the audio. """
-        audio_chunks = make_chunks(audio, 30)  # split audio into 30ms chunks
-        speech_audio = AudioSegment.empty()
-        for chunk in audio_chunks:
-            if self.is_speech(chunk.raw_data):
-                speech_audio += chunk
-        return speech_audio
-
     def cmd_relay(self, list_name, inp_str):
-        print(f'Getting input String\t:{inp_str}{nl} Getting List Name\t:{list_name}')
-        if list_name == 'WebSearch_cmd_list':
-            return self.get_action(com_feat.google_search(inp_str), None)
-        elif list_name == 'WakeKeywords_cmd_list':
-            return self.get_action(com_feat.wake_up_cmd(), None)
-        elif list_name == 'WikiSearch_cmd_list':
-            return self.get_action(com_feat.wikipedia_search(inp_str), None)
-        elif list_name == 'TimeReminder_cmd_list':
-            return self.get_action(com_feat.tell_time(), None)
-        elif list_name == 'DayReminder_cmd_list':
-            return self.get_action(com_feat.get_today(), None)
-        elif list_name == 'Intro_cmd_list':
-            return self.get_action(com_feat.name_intro(), None)
-        elif list_name == 'YtMusic_cmd_list':
-            return self.get_action(com_feat.play_music(inp_str), None)
-        elif list_name == 'NoteCreate_cmd_list':
-            return self.get_action(com_feat.make_note(), None)
-        elif list_name == 'ApplicationWindowOpen_cmd_list':
-            # Updated to handle window switching
-            # return self.get_action(lambda: com_feat.open_window(inp_str), None)
-            return self.get_action(com_feat.open_window(), None)
-        elif list_name == 'StopKeywords_cmd_list':
-            return self.get_action(default_apps.end_assistant(), None)
-        elif list_name == 'SystemOff_cmd_list':
-            return self.get_action(default_apps.system_down(), None)
-        elif list_name == 'SystemLock_cmd_list':
-            return self.get_action(default_apps.sys_lock(), None)
-        elif list_name == 'RecycleBin_Cln_cmd_list':
-            return self.get_action(default_apps.cln_trsh(), None)
-        elif list_name == 'ConsoleCln_list_cmd':
-            return self.get_action(default_apps.cmd_clr(), None)
-        elif list_name == 'Mute_sound':
-            return self.get_action(default_apps.mute_system_sound(), None)
-        elif list_name == 'Unmute_sound':
-            return self.get_action(default_apps.unmute_system_sound(), None)
-        else:
-            return self.engine.Speak('Please repeat your query again')
+        logger.info(f'cmd_relay invoked with list_name: {list_name} and inp_str: {inp_str}')
+        try:
+            if list_name == 'WebSearch_cmd_list':
+                return self.get_action(com_feat.google_search(inp_str), None)
+            elif list_name == 'WakeKeywords_cmd_list':
+                return self.get_action(com_feat.wake_up_cmd(), None)
+            elif list_name == 'WikiSearch_cmd_list':
+                return self.get_action(com_feat.wikipedia_search(inp_str), None)
+            elif list_name == 'TimeReminder_cmd_list':
+                return self.get_action(com_feat.tell_time(), None)
+            elif list_name == 'DayReminder_cmd_list':
+                return self.get_action(com_feat.get_today(), None)
+            elif list_name == 'Intro_cmd_list':
+                return self.get_action(com_feat.name_intro(), None)
+            elif list_name == 'YtMusic_cmd_list':
+                return self.get_action(com_feat.play_music(inp_str), None)
+            elif list_name == 'NoteCreate_cmd_list':
+                return self.get_action(com_feat.make_note(), None)
+            elif list_name == 'ApplicationWindowOpen_cmd_list':
+                return self.get_action(com_feat.open_window(), None)
+            elif list_name == 'StopKeywords_cmd_list':
+                return self.get_action(default_apps.end_assistant(), None)
+            elif list_name == 'SystemOff_cmd_list':
+                return self.get_action(default_apps.system_down(), None)
+            elif list_name == 'SystemLock_cmd_list':
+                return self.get_action(default_apps.sys_lock(), None)
+            elif list_name == 'RecycleBin_Cln_cmd_list':
+                return self.get_action(default_apps.cln_trsh(), None)
+            elif list_name == 'ConsoleCln_list_cmd':
+                return self.get_action(default_apps.cmd_clr(), None)
+            elif list_name == 'Mute_sound':
+                return self.get_action(default_apps.mute_system_sound(), None)
+            elif list_name == 'Unmute_sound':
+                return self.get_action(default_apps.unmute_system_sound(), None)
+            else:
+                logger.warning('Command not recognized.')
+                return self.engine.Speak('Please repeat your query again')
+        except Exception as e:
+            logger.error(f'Error in cmd_relay: {e}')
 
     def get_action(self, action, action_filter):
-        if action_filter is not None:
-            print(f'Param is a function with Action_filter values')
+        if callable(action):
+            logger.info('Executing action.')
             action = partial(action, action_filter)
             return action
         else:
-            if action == callable:
-                print(f'Param is a function')
-                action = partial(action, None)
-                self.engine.Speak(f'Function:{action}')
-                pass
-            return action
+            logger.warning('Action is not callable.')
+            return None
 
     def dict_ops(self, dict_str: dict):
         trans_val = ''
-        print(f'InPut Dict:\t{dict_str}')
+        logger.debug(f'dict_ops invoked with dict_str: {dict_str}')
         try:
             if dict_str is not None:
-                if type(dict_str) == dict:
+                if isinstance(dict_str, dict):
                     alter_val = dict_str["alternative"]
                     for p in range(len(alter_val)):
                         trans_val = alter_val[p]["transcript"]
-                        print(f'Trans_val:\t{trans_val}{nl}typ:\t{type(trans_val)}')
+                        logger.info(f'Trans_val: {trans_val}')
                         return trans_val
-                elif type(dict_str) == list:
+                elif isinstance(dict_str, list):
                     pass
                 else:
                     pass
             else:
                 pass
         except Exception as e:
-            print(f"Error processing dictionary: {e}")
+            logger.error(f'Error in dict_ops: {e}')
 
     def TakeQuery(self):
-        query = self.engine.take_command()  # .lower()
+        """
+        :return: action none
+        """
+        logger.info('Listening for query...')
+        query = self.engine.take_command()
         if query is not None:
             query = self.dict_ops(query)
+            logger.info('Dict Ops executed')
             return query
-        elif not query:
+        elif query == []:
+            logger.info('query is an empty list')
             self.engine.Speak(f'can you repeat that once again!')
-            return []
+            return None
         else:
-            self.engine.Speak(f'can you repeat that once again!')
-            return []
-
-    def listen_and_act(self):
-        while True:
-            try:
-                with concurrent.futures.ThreadPoolExecutor() as executor_for_query:
-                    get_query = executor_for_query.submit(self.TakeQuery)
-                    returned_query = get_query.result(timeout=10)  # Timeout after 10 seconds
-
-                if returned_query:
-                    get_key_element = qr.key_by_val(list_data, returned_query)
-                    returned_action = self.cmd_relay(get_key_element, returned_query)
-                    if callable(returned_action):
-                        # Start a new thread for the action
-                        action_thread = threading.Thread(target=self.execute_action, args=(returned_action,))
-                        action_thread.start()
-            except concurrent.futures.TimeoutError:
-                print("Listening timed out. Restarting listening process.")
-            except Exception as e:
-                print(f"An error occurred: {e}")
-
-    def execute_action(self, action):
-        try:
-            action()  # Execute the action if it's callable
-        except Exception as e:
-            print(f"Error executing action: {e}")
+            logger.info('Dict Ops executed')
+            self.engine.Speak(f'Did not get you. ')
+            return None
+            pass
 
 
 if __name__ == '__main__':
@@ -187,33 +145,24 @@ if __name__ == '__main__':
     active_word = "I'm up here"
     VA = VaaniVA()
     VA.Hello()
+    max_attempts = 10  # Maximum number of attempts to listen for a query
+    attempt_count = 0
 
-    dm = DeviceManager()
-    input_devices = dm.get_input_devices()
-    output_devices = dm.get_output_devices()
-
-    if input_devices:
-        dm.set_input_device(input_devices[0]['index'])
-    else:
-        logging.debug("No input devices found.")
-
-    if output_devices:
-        dm.set_output_device(output_devices[0]['index'])
-    else:
-        logging.debug("No output devices found.")
-
-    while True:
+    while attempt_count < max_attempts:
         try:
-            audio = dm.listen()
-            returned_query = dm.recognize_speech(audio)
-            print(f'User query\t{returned_query}')
+            with concurrent.futures.ThreadPoolExecutor() as executor_for_query:
+                get_query = executor_for_query.submit(VA.TakeQuery)
+                returned_query = get_query.result()
 
-            get_key_element = qr.key_by_val(list_data, returned_query)
-            returned_action = VA.cmd_relay(get_key_element, returned_query)
+            if returned_query:
+                get_key_element = qr.key_by_val(list_data, returned_query)
+                returned_action = VA.cmd_relay(get_key_element, returned_query)
+                if callable(returned_action):
+                    if returned_action:
+                        attempt_count = 0  # Reset attempt counter if a valid action is found
+            else:
+                attempt_count += 1
+
+            time.sleep(0.5)  # Adding a small delay to avoid tight loop
         except Exception as e:
-            logging.debug(f"Error: {e}")
-            if not dm.handle_errors():
-                break
-
-
-##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
+            logger.error(f"An error occurred: {e}")

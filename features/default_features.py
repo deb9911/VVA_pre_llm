@@ -9,7 +9,10 @@ import winshell as winshell
 
 from engine.engine_updated import Engine
 from .sound import Sound
-import logging
+# import logging
+import logging_config
+
+logger = logging_config.get_logger(__name__)
 
 file_type = {"txt": "text", "xlsx": "spreadsheet", "csv": "spreadsheet",
              "docs": "document", "pdf": 'pdf', "ini": "information",
@@ -22,12 +25,12 @@ class DefaultApps:
     qry = ''
 
     def file_recognizer(self):
-        logging.debug(f'Initiate File recognizer. ')
+        logger.info(f'Initiate File recognizer. ')
         file_recogniser = file_type.keys()
         # if file_recogniser == 'txt':
 
     def tell_time(self):
-        logging.debug(f'Initiate Time operation. ')
+        logger.info(f'Initiate Time operation. ')
         # This method will give the time
         time = str(datetime.datetime.now())
 
@@ -40,7 +43,7 @@ class DefaultApps:
         return hour, mins
 
     def tell_day(self):
-        logging.debug(f'Initiate Day Operation. ')
+        logger.info(f'Initiate Day Operation. ')
         # This function is for telling the
         # day of the week
         day = datetime.datetime.today().weekday() + 1
@@ -57,7 +60,7 @@ class DefaultApps:
             return day_of_the_week
 
     def check_file(filename, path):
-        logging.debug(f'Initiate Check file process. ')
+        logger.info(f'Initiate Check file process. ')
         filepath = str()
         dirs = {'home': os.path.expanduser,
                 'downloads': os.path.expanduser('/Downloads'),
@@ -72,7 +75,7 @@ class DefaultApps:
             return filepath
 
     def read_content(filepath):
-        logging.debug(f'Initiate Reading content operation. ')
+        logger.info(f'Initiate Reading content operation. ')
         pdf_text = ''
         with pdfplumber.open(filepath) as pdf:
             pages = pdf.pages
@@ -82,7 +85,7 @@ class DefaultApps:
 
     @staticmethod
     def google_search(qry: str):
-        logging.debug(f'Initiate Google Search operation. ')
+        logger.info(f'Initiate Google Search operation. ')
         """
         :param qry: str
         :return: str
@@ -91,48 +94,52 @@ class DefaultApps:
             try:
                 from googlesearch import search
             except:
+                logger.info(f'Exception happened at Google search module unavailability')
                 print("No Module named <<Google Search>> ")
 
             for i in search(qry, tld="co.in", num=10, stop=10, pause=2):
                 print("search value:\t", i)
                 return i
         else:
+            logger.info(f'Empty string')
             print(f'Empty String:\t{qry}')
 
     def cmd_clr(self):
-        logging.debug(f'Initiate Clear console screen. ')
+        logger.info(f'Initiate Clear console screen. ')
         clear = lambda: os.system('cls')
         return clear
 
     def sys_lock(self):
-        logging.debug(f'Initiate System locking operation. ')
+        logger.info(f'Initiate System locking operation. ')
         ctypes.windll.user32.LockWorkStation()
 
     def system_down(self):
-        logging.debug(f'Initiate Shut Down process. ')
+        logger.info(f'Initiate Shut Down process. ')
         subprocess.call('shutdown / p /f')
 
     def cln_trsh(self):
-        logging.debug(f'Initiate Clearn trash operation. ')
+        logger.info(f'Initiate Clearn trash operation. ')
         return winshell.recycle_bin().empty(confirm=False, show_progress=False, sound=True)
 
     def hibrnet(self):
-        logging.debug(f'Initiate hibernet operation. ')
+        logger.info(f'Initiate hibernet operation. ')
         return subprocess.call("shutdown / h")
 
     def sign_off(self):
-        logging.debug(f'Initiate Signing off process. ')
+        logger.info(f'Initiate Signing off process. ')
         return subprocess.call(["shutdown", "/l"])
 
     def end_assistant(self):
-        logging.debug(f'Initiate End of main process initiated. ')
+        logger.info(f'Initiate End of main process initiated. ')
         Engine.Speak("Bye")
         exit()
 
     def mute_system_sound(self):
+        logger.info('Mute system sound initiated')
         return Sound.mute()
 
     def unmute_system_sound(self):
+        logger.info('Unmute system sound initiated ')
         return Sound.volume_set(50)
 
 

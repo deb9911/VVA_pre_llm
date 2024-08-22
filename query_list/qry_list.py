@@ -1,10 +1,13 @@
 import os
 import json
 
+import logging_config
 
 src_file = r'query_list/cmd.json'
 # src_file = r'query_list/cmd.json'
 nl = '\n'
+
+logger = logging_config.get_logger(__name__)
 
 
 class CmdParser:
@@ -12,6 +15,7 @@ class CmdParser:
         print(f'PWD:\t{os.getcwd()}')
         with open(src_file, 'r') as cmd:
         # with open(r'../query_list/cmd.json', 'r') as cmd:
+            logger.info(f'Command config file read')
             data = json.load(cmd)
             # print(f'Data: \t{data}')
             return data
@@ -21,11 +25,13 @@ class CmdParser:
         key = list(data.keys())
         print(f'Key:\t{key}')
         for i in range(len(key)):
+            logger.info(f'key operation from config data')
             key_name = key[i]
             print(f'Key_name:\t{type(key_name)}')
         return key
 
     def get_val(self, data, key_word):
+        logger.info(f'Get Val initiated')
         if len(key_word) != 0:
             if data[key_word]:
                 val = data[key_word]
@@ -35,11 +41,14 @@ class CmdParser:
                     print(f'Qry_elmnt:\t{qry_elmt}')
                     return val, qry_elmt
             else:
+                logger.info(f'key operation from config data')
                 print(f'Key Not matching')
         else:
+            logger.info(f'Empty string')
             print(f'Empty string')
 
     def key_by_val(self, data, val_str: str):
+        logger.info(f'key_by_val initiated')
         if val_str is not None:
             val_str = val_str.lower()
         else:
@@ -56,6 +65,7 @@ class CmdParser:
                             print(f'Key<<<>>>>>>:\t{k}')
                             return k
                         else:
+                            logger.info('Match false')
                             match = False
                             pass
                     else:

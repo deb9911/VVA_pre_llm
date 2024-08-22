@@ -2,8 +2,11 @@ import pyttsx3
 import speech_recognition as sr
 import logging
 
+import logging_config
+
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+logger = logging_config.get_logger(__name__)
 
 
 class Engine:
@@ -14,10 +17,13 @@ class Engine:
 
     @staticmethod
     def take_command():
+        logger.info(f'Initiating Command taking function')
         with sr.Microphone() as source:
+            logger.info(f'Initiate input device as Micro phone')
             audio = Engine.r.listen(source=source)
         try:
             print("Recognizing")
+            logger.info(f'Source input processing. -- Voice input proces')
             query = Engine.r.recognize_google(audio, language='en-in', show_all=True)
             if type(query) == list:
                 print(f'Query_type:\t{type(query)}')
@@ -32,8 +38,10 @@ class Engine:
                 Engine.Speak("Repeat your query Please>> ")
                 pass
         except 'speech_recognition.UnknownValueError':
+            logger.info(f'speech_recognition.UnknownValueError')
             pass
         except Exception as e:
+            logger.info(f'Exception happened at \t{e}')
             logger.exception("Audio input not recognized. ")
             print(e)
             print("Say that again")

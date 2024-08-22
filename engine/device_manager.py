@@ -2,8 +2,13 @@ import pyaudio
 import speech_recognition as sr
 import logging
 
+import logging_config
+
+logger = logging_config.get_logger(__name__)
+
 
 class DeviceManager:
+
     def __init__(self):
         self.pyaudio_instance = pyaudio.PyAudio()
         self.recognizer = sr.Recognizer()

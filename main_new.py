@@ -5,6 +5,7 @@ import time
 from functools import partial
 from time import strftime
 import concurrent.futures
+import json
 
 from engine.engine import Engine
 from features.comm_features import com_feat
@@ -34,6 +35,27 @@ logging.basicConfig(filename=filepath, filemode='w',
 logger = logging.getLogger(__name__)
 print(f'Logging started. Log file at: {filepath}')
 logger.info(f'Logging started. Log file at: {filepath}')
+
+
+def command_path_validator():
+    command_folder_path = "./query_list"
+    command_file_path = os.path.join(command_folder_path, 'cmd.json')
+    # Check if the directory exists
+    if not os.path.exists(command_folder_path):
+        print(f"The directory '{command_folder_path}' does not exist. Creating it now...")
+        os.makedirs(command_folder_path)  # Creates the directory
+    else:
+        print(f"The directory '{command_folder_path}' already exists.")
+
+    # Check if the JSON file exists, create it if it doesn't
+    if not os.path.isfile(command_file_path):
+        print(f"The JSON file '{command_file_path}' does not exist. Creating an empty JSON file...")
+        # Create an empty JSON structure or initialize with default content
+        initial_data = {}  # You can put any default JSON data here
+        with open(command_file_path, 'w') as json_file:
+            json.dump(initial_data, json_file, indent=4)  # Write empty JSON object or default data
+    else:
+        print(f"The JSON file '{command_file_path}' already exists.")
 
 
 class VaaniVA:
@@ -143,6 +165,7 @@ class VaaniVA:
 if __name__ == '__main__':
     start_time_counter = time.time()
     active_word = "I'm up here"
+    command_path_validator()
     VA = VaaniVA()
     VA.Hello()
     max_attempts = 10  # Maximum number of attempts to listen for a query

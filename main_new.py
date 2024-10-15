@@ -5,7 +5,7 @@ import time
 from functools import partial
 from time import strftime
 import concurrent.futures
-import json
+import json, requests
 
 from engine.engine import Engine
 from features.comm_features import com_feat
@@ -35,6 +35,38 @@ logging.basicConfig(filename=filepath, filemode='w',
 logger = logging.getLogger(__name__)
 print(f'Logging started. Log file at: {filepath}')
 logger.info(f'Logging started. Log file at: {filepath}')
+
+
+# Define the Flask app URL and token
+# FLASK_APP_URL = 'http://localhost:5000'  # Replace with your actual Flask app URL
+FLASK_APP_URL = 'http://127.0.0.1:5000'  # Replace with your actual Flask app URL
+TOKEN_FILE = './user_token.json'  # Replace or specify where your token is stored
+
+
+# Function to load the token from a file or other sources
+def load_token():
+    if os.path.exists(TOKEN_FILE):
+        with open(TOKEN_FILE, 'r') as file:
+            data = json.load(file)
+            return data.get('token')
+    logger.error("Token file not found or token missing.")
+    return None
+
+
+# Token Validation function
+def validate_token(token):
+    try:
+        response = requests.post(f"{FLASK_APP_URL}/validate_token", json={"token": token})
+        response_data = response.json()
+        if response.status_code == 200 and response_data.get("status") == "valid":
+            logger.info("Token validated successfully.")
+            return True
+        else:
+            logger.warning(f"Token validation failed: {response_data.get('message')}")
+            return False
+    except requests.RequestException as e:
+        logger.error(f"Error while validating token: {e}")
+        return False
 
 
 def command_path_validator():
@@ -163,6 +195,15 @@ class VaaniVA:
 
 
 if __name__ == '__main__':
+    token = load_token()
+    if not token:
+        print("Token is missing or invalid. Please provide a valid token to continue.")
+        sys.exit(1)  # Exit if no token is found
+
+    if not validate_token(token):
+        print("Token validation failed. Please check your token and try again.")
+        sys.exit(1)  # Exit if token validation fails
+
     start_time_counter = time.time()
     active_word = "I'm up here"
     command_path_validator()
